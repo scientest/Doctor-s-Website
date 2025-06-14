@@ -1,0 +1,28 @@
+{
+  "name": "internship_dr",
+  "version": "1.0.0",
+  "description": "Doctor Connect",
+  "repository": {
+    "type": "git",
+    "url": "DoctorConnect"
+  },
+  "license": "ISC",
+  "author": "Yash,Sunita,Riya Bansal,Sahnaaz Khan ,Akshat Shrivastav, Nishita Singh",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dot": "^1.1.3",
+    "dotenv": "^16.5.0",
+    "env": "^0.0.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.2",
+    "multer": "^2.0.1"
+  }
+}
