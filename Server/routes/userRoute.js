@@ -1,18 +1,33 @@
 const express = require("express");
 const router = express.Router();
-const userModel = require("../models/userModel");
+const userModel = require("../models/user");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const blogModel = require("../models/blog");
+const {varified} =require("../middlewares/SendMail");
 const bcrypt = require("bcrypt");
+const { isLoggedIn } = require("../Controllers/AuthController");
+const {jwttoken} = require("../middlewares/jwttoken");
+const user = require("../models/user");
 
 //Register
 router.get("/", (req, res) => {
-    res.render("register");
+    res.status(200).render("home");
 });
 
 
+router.get("/register", (req, res) => {
+    res.status(200).render("register");
+})
+
+
+const generateOtp =() => Math.floor(100000 + Math.random() * 900000);
 //Register form post
 router.post("/register", async(req, res) => {
-   const { name, email, password, contact, address,image} = req.body;
+   const { name, email, password, contact, address,image, Dob} = req.body;
+//    console.log(name, email, password, contact, address, image, Dob);
+    const otp = generateOtp();
+    const otpExpires = Date.now() + 600000;
    const existingUser = await userModel.findOne({ email });
    if(existingUser){
     res.redirect("/login");
@@ -25,16 +40,40 @@ router.post("/register", async(req, res) => {
                 email,
                 password:hash,
                 contact,
-                address
+                address,
+                Dob,
+                otp,
+                otpExpires
             });
             user.save();
-            const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET_KEY);
+            const token = jwttoken(user);
             res.cookie("token", token);
-            res.redirect("/login");
+            varified(user.email,otp);
+             res.redirect("/Varify");
         })
     })
    }
 });
+
+router.get("/varify", (req, res) => {
+    res.render("Varify");
+});
+
+router.post("/varify",isLoggedIn,async(req,res)=>{
+    const {otp}=req.body;
+    const user1 = req.user;
+   const existingUser = await userModel.findById(user1._id);
+   if(existingUser.otp==otp){
+    existingUser.verified=true;
+    existingUser.save();
+    res.redirect("/login");
+   }else{
+    res.redirect("/varify");
+   }
+
+})
+
+
 
 //login
 router.get("/login", (req, res) => {
@@ -47,9 +86,9 @@ router.post("/login",async(req,res)=>{
      if(existingUser){
         bcrypt.compare(password,existingUser.password,(err,result)=>{
             if(result){
-                const token = jwt.sign({ id: existingUser._id, email: existingUser.email }, process.env.JWT_SECRET_KEY);
+                const token = jwttoken(existingUser);
                 res.cookie("token", token);
-                res.redirect("/dashboard");
+                res.redirect("/dashboard/"+existingUser._id);
             }else{
                 res.status(400).json({ message: "Incorrect password" });
             }
@@ -58,8 +97,16 @@ router.post("/login",async(req,res)=>{
 
 
 });
-router.get("/dashboard", (req, res) => {
-    res.render("dashboard");
+router.get("/dashboard/:id", isLoggedIn,(req, res) => {
+    const user1 = req.user;
+    res.render("dashboard",{user:user1});
+});
+
+
+
+router.get("/logout", (req, res) => {
+    res.clearCookie("token");
+    res.redirect("/login");
 });
 
 
