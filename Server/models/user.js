@@ -51,7 +51,8 @@ const userSchema = new mongoose.Schema({
     },
      otp: String,
     otpExpires: Date,
-    verified: { type: Boolean, default: false }
+    verified: { type: Boolean, default: false },
+    attempts: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("User", userSchema);

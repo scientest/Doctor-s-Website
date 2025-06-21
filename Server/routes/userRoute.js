@@ -59,19 +59,68 @@ router.get("/varify", (req, res) => {
     res.render("Varify");
 });
 
-router.post("/varify",isLoggedIn,async(req,res)=>{
-    const {otp}=req.body;
+router.post("/verify", isLoggedIn, async (req, res) => {
+    let { otp } = req.body;
     const user1 = req.user;
-   const existingUser = await userModel.findById(user1._id);
-   if(existingUser.otp==otp){
-    existingUser.verified=true;
-    existingUser.save();
-    res.redirect("/login");
-   }else{
-    res.redirect("/varify");
-   }
 
-})
+    if (!otp) {
+        return res.redirect("/verify");
+    }
+
+    try {
+        const existingUser = await userModel.findById(user1._id);
+
+        if (!existingUser) {
+            return res.redirect("/register");
+        }
+
+        // Check if OTP expired
+        if (existingUser.otpExpires < Date.now()) {
+            // Regenerate OTP
+            const newOtp = generateOtp();
+            existingUser.otp = newOtp;
+            existingUser.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+            existingUser.attempts = 0; // Reset attempts on resend
+            await existingUser.save();
+
+            // Send new OTP to user
+            varified(existingUser.email, newOtp);  // assuming this function sends the email
+
+            // req.flash('error', 'OTP expired. A new OTP has been sent to your email.');
+            return res.redirect("/verify");
+        }
+
+        // Check if OTP matches
+        if (existingUser.otp === otp) {
+            existingUser.verified = true;
+            existingUser.otp = null;
+            existingUser.otpExpires = null;
+            existingUser.attempts = 0;
+            await existingUser.save();
+
+            return res.redirect("/login");
+        } else {
+            // Wrong OTP
+            existingUser.attempts = (existingUser.attempts || 0) + 1;
+
+            if (existingUser.attempts >= 3) {
+                await userModel.findByIdAndDelete(user1._id);
+                // req.flash('error', 'Too many failed attempts. Please register again.');
+                return res.redirect("/register");
+            } else {
+                await existingUser.save();
+                // req.flash('error', 'Invalid OTP. Try again.');
+                return res.redirect("/verify");
+            }
+        }
+
+    } catch (err) {
+        console.error("OTP Verification Error:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
 
 
 
