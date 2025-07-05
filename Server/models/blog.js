@@ -9,24 +9,21 @@ const blogSchema =new mongoose.Schema({
         type: String,
         required: true,
     },
-    image: {
-        type: String,
-        required: true,
-    },
-    author: {
-        type: {
+
+    author: 
+        {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
         },
-    },
     date: {
         type: Date,
         default: Date.now},
-    likes: {
-        type: Array,
-        default: [{type:mongoose.Schema.Types.ObjectId, ref:"user"}]
-    }
-},
-);
+    likes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+        },
+    ]
+});
 
-module.exports = mongoose.model("blog", blogSchema);
+module.exports = mongoose.model("Blog", blogSchema);

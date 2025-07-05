@@ -27,10 +27,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    blogsId:{
-        type: Array,
-        default:[{type: mongoose.Schema.Types.ObjectId, ref: "Blog"}]
-    },
+    blogs:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Blog",
+        },
+    ],
     Dob: {
         type: Date,
         required: true,
@@ -55,4 +57,4 @@ const userSchema = new mongoose.Schema({
     attempts: { type: Number, default: 0 },
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("user", userSchema);

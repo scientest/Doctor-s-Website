@@ -1,24 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const userModel = require("../models/user");
-const jwt = require("jsonwebtoken");
+
 const cookieParser = require("cookie-parser");
 const blogModel = require("../models/blog");
 const {varified} =require("../middlewares/SendMail");
 const bcrypt = require("bcrypt");
 const { isLoggedIn } = require("../Controllers/AuthController");
 const {jwttoken} = require("../middlewares/jwttoken");
-const user = require("../models/user");
-
-//Register
-router.get("/", (req, res) => {
-    res.status(200).render("home");
-});
-
-
-router.get("/register", (req, res) => {
-    res.status(200).render("register");
-})
+const userModel= require("../models/user");
 
 
 const generateOtp =() => Math.floor(100000 + Math.random() * 900000);
@@ -30,7 +19,7 @@ router.post("/register", async(req, res) => {
     const otpExpires = Date.now() + 600000;
    const existingUser = await userModel.findOne({ email });
    if(existingUser){
-    res.redirect("/login");
+    return res.status(400).json({ message: "User already exists. Please login" });
    }else{
     bcrypt.genSalt(10,(err,salt)=>{
         bcrypt.hash(password,salt,(err,hash)=>{
@@ -49,29 +38,26 @@ router.post("/register", async(req, res) => {
             const token = jwttoken(user);
             res.cookie("token", token);
             varified(user.email,otp);
-             res.redirect("/Varify");
+             return res.status(201).json({ message: "User registered. otp sent for verification ",userId:user._id});
         })
     })
    }
 });
 
-router.get("/varify", (req, res) => {
-    res.render("Varify");
-});
-
+//OTP verification
 router.post("/verify", isLoggedIn, async (req, res) => {
     let { otp } = req.body;
     const user1 = req.user;
 
     if (!otp) {
-        return res.redirect("/verify");
+        return res.status(400).json({ message: "OTP is required" });
     }
 
     try {
         const existingUser = await userModel.findById(user1._id);
 
         if (!existingUser) {
-            return res.redirect("/register");
+            return res.status(404).json({ message: "User not found" });
         }
 
         // Check if OTP expired
@@ -87,7 +73,7 @@ router.post("/verify", isLoggedIn, async (req, res) => {
             varified(existingUser.email, newOtp);  // assuming this function sends the email
 
             // req.flash('error', 'OTP expired. A new OTP has been sent to your email.');
-            return res.redirect("/verify");
+            return res.status(400).json({ message: "OTP expired. A new OTP has been sent to your email." });
         }
 
         // Check if OTP matches
@@ -98,7 +84,7 @@ router.post("/verify", isLoggedIn, async (req, res) => {
             existingUser.attempts = 0;
             await existingUser.save();
 
-            return res.redirect("/login");
+            return res.status(200).json({ message: "OTP verified successfully" });
         } else {
             // Wrong OTP
             existingUser.attempts = (existingUser.attempts || 0) + 1;
@@ -106,11 +92,11 @@ router.post("/verify", isLoggedIn, async (req, res) => {
             if (existingUser.attempts >= 3) {
                 await userModel.findByIdAndDelete(user1._id);
                 // req.flash('error', 'Too many failed attempts. Please register again.');
-                return res.redirect("/register");
+                return res.status(403).json({ message: "Too many failed attempts. Please register again." });
             } else {
                 await existingUser.save();
                 // req.flash('error', 'Invalid OTP. Try again.');
-                return res.redirect("/verify");
+                return res.status(401).json({ message: "Invalid OTP. Try again." });
             }
         }
 
@@ -137,7 +123,7 @@ router.post("/login",async(req,res)=>{
             if(result){
                 const token = jwttoken(existingUser);
                 res.cookie("token", token);
-                res.redirect("/dashboard/"+existingUser._id);
+                res.status(200).json({ message: "Login successful",userId:existingUser._id });
             }else{
                 res.status(400).json({ message: "Incorrect password" });
             }
@@ -146,16 +132,58 @@ router.post("/login",async(req,res)=>{
 
 
 });
-router.get("/dashboard/:id", isLoggedIn,(req, res) => {
+router.get("/dashboard/:id", isLoggedIn,async(req, res) => {
     const user1 = req.user;
-    res.render("dashboard",{user:user1});
+    const blog = await blogModel.find().populate("author");
+    res.status(200).json( {user:user1,blog});
+});
+
+router.post("/blogs/:id", isLoggedIn,async(req, res) => {
+    const user1 = req.user;
+    const { title, description } = req.body;
+    const blog = new blogModel({
+        title,
+        description,
+        author:user1._id
+    });
+    await blog.save();
+    user1.blogs.push(blog._id);
+    await user1.save();
+    res.status(201).json({ message: "Blog created successfully",blog});
 });
 
 
+//edit
+router.put("/blogs/edit/:id/:blogId", isLoggedIn,async(req, res) => {
+    const user1 = req.user;
+    const blog = await blogModel.findById(req.params.blogId);
+    blog.title = req.body.title;
+    blog.description = req.body.description;
+    await blog.save();
+   res.status(200).json({ message: "Blog updated successfully",blog});
+})
 
+//likes
+router.put("/blogs/like/:id/:blogId", isLoggedIn,async(req, res) => {
+    const user1 = req.user;
+    const blog = await blogModel.findById(req.params.blogId);
+    blog.likes.push(user1._id);
+    await blog.save();
+    res.status(200).json({ message: "Blog liked successfully",blog});
+})
+
+router.delete("/blogs/delete/:id/:blogId", isLoggedIn,async(req, res) => {
+    const user1 = req.user;
+    const blog = await blogModel.findByIdAndDelete(req.params.blogId);
+    user1.blogs.pull(blog._id);
+    await user1.save();
+    res.status(200).json({ message: "Blog deleted successfully",blog});
+})
+
+//Logout ==== 
 router.get("/logout", (req, res) => {
     res.clearCookie("token");
-    res.redirect("/login");
+    res.status(200).json({ message: "Logout successful" });
 });
 
 
