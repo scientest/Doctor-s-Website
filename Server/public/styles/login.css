@@ -1,0 +1,152 @@
+:root {
+    --primary-color: #2a7fa0;
+    --light-color: #f0f9ff;
+    --white: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--light-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login-container {
+    background: var(--white);
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px var(--shadow);
+    width: 100%;
+    max-width: 400px;
+    transition: all 0.3s ease-in-out;
+}
+
+.login-container:hover {
+    transform: translateY(-2px);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo h1 {
+    color: var(--primary-color);
+    font-size: 1.8em;
+    margin: 0;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.checkbox-container input {
+    margin-right: 8px;
+}
+
+.forgot {
+    display: block;
+    text-align: right;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.forgot:hover {
+    text-decoration: underline;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: var(--primary-color);
+    color: white;
+    font-size: 1em;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #1b5e7a;
+}
+
+.or-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 24px 0;
+}
+
+.or-separator .line {
+    flex: 1;
+    border: none;
+    border-top: 1px solid #ccc;
+}
+
+.or-separator .or-text {
+    padding: 0 12px;
+    color: #888;
+    font-weight: 600;
+}
+
+.google-login {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.register-redirect {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #555;
+}
+
+.register-redirect a {
+    color: #28a745;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.register-redirect a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 500px) {
+    .login-container {
+        padding: 30px 20px;
+    }
+}

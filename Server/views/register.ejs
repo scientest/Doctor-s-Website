@@ -1,83 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Register</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    form {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #218838;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Registration</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="stylesheet" href="./styles/register.css">
 </head>
-<body>
-  
-  <form action="/register" method="POST">
-    <h2>Register</h2>
-    <label>Name</label>
-    <input type="text" name="name" required />
-      
-        <label>Email</label>
-        <input type="email" name="email" required />
-      
-    <label>Password</label>
-    <input type="password" name="password" required />
 
-    <label>Address</label>
-    <textarea name="address" required></textarea>
+<body class="min-h-screen flex items-center justify-center">
+  <form id="registrationForm" action="/register" method="POST" enctype="multipart/form-data" class="form-card w-full max-w-lg bg-white p-8 rounded shadow-md">
+    <h2 class="text-3xl font-bold mb-6 text-center form-title">Create Your Doctor Account</h2>
 
-    <label>Contact</label>
-    <input type="text" name="contact" required />
+    <div id="messageBox" class="hidden text-white text-sm rounded px-4 py-2 mb-4"></div>
 
-    <label>Dob</label>
-    <input type="date" name="Dob" required />
+    <div class="grid grid-cols-1 gap-4">
+      <input id="name" name="name" type="text" placeholder="Full Name" class="p-2 border border-blue-200 rounded"
+        required />
+      <input id="dob" name="dob" type="date" placeholder="Date of Birth" class="p-2 border border-blue-200 rounded" required />
+      <input id="email" name="email" type="email" placeholder="Email Address" class="p-2 border border-blue-200 rounded"
+        required />
 
-    <button type="submit">Register</button>
+      <div class="input-icon">
+        <input id="password" name="password" type="password" placeholder="Password"
+          class="p-2 border border-blue-200 rounded" required />
+        <i id="togglePassword" class="fas fa-eye-slash"></i>
+      </div>
+
+      <div class="input-icon">
+        <input id="confirm-password" name="confirm-password" type="password" placeholder="Confirm Password"
+          class="p-2 border border-blue-200 rounded" required />
+        <i id="toggleConfirmPassword" class="fas fa-eye-slash"></i>
+      </div>
+
+      <input id="license" name="license" type="text" placeholder="Medical License Number"
+        class="p-2 border border-blue-200 rounded" required />
+      <input id="licenseFile" name="licenseFile" type="file" accept="application/pdf"
+        class="p-2 border border-blue-200 rounded" />
+
+      <select id="specialization" name="specialization" class="p-2 border border-blue-200 rounded">
+        <option value="">Select Specialization</option>
+        <option value="Cardiology">Cardiology</option>
+        <option value="Dermatology">Dermatology</option>
+        <option value="Neurology">Neurology</option>
+        <option value="Pediatrics">Pediatrics</option>
+        <option value="Orthopedics">Orthopedics</option>
+        <option value="Gynecology">Gynecology</option>
+        <option value="Oncology">Oncology</option>
+        <option value="Psychiatry">Psychiatry</option>
+        <option value="ENT">ENT</option>
+        <option value="Ophthalmology">Ophthalmology</option>
+        <option value="General Surgery">General Surgery</option>
+        <option value="Other">Other</option>
+      </select>
+      <div id="otherSpecializationDiv" class="hidden">
+        <input id="otherSpecialization" name="otherSpecialization" type="text" placeholder="Enter other specialization"
+          class="p-2 border border-blue-200 rounded" />
+      </div>
+
+      <input id="experience" name="experience" type="number" placeholder="Years of Experience (e.g. 5)"
+        class="p-2 border border-blue-200 rounded" required />
+
+      <select id="affiliation" name="affiliation" class="p-2 border border-blue-200 rounded">
+        <option value="">Select Affiliation</option>
+        <option value="AIIMS">AIIMS</option>
+        <option value="Fortis">Fortis</option>
+        <option value="Apollo">Apollo</option>
+        <option value="Max Healthcare">Max Healthcare</option>
+        <option value="Medanta">Medanta</option>
+        <option value="Manipal Hospitals">Manipal Hospitals</option>
+        <option value="Narayana Health">Narayana Health</option>
+        <option value="Sir Ganga Ram Hospital">Sir Ganga Ram Hospital</option>
+        <option value="Christian Medical College">Christian Medical College (CMC), Vellore</option>
+        <option value="Tata Memorial Hospital">Tata Memorial Hospital, Mumbai</option>
+        <option value="PGIMER">PGIMER, Chandigarh</option>
+        <option value="Sankara Nethralaya">Sankara Nethralaya, Chennai</option>
+        <option value="Lilavati Hospital">Lilavati Hospital, Mumbai</option>
+        <option value="Kokilaben Dhirubhai Ambani Hospital">Kokilaben Dhirubhai Ambani Hospital, Mumbai</option>
+        <option value="Jaslok Hospital">Jaslok Hospital, Mumbai</option>
+        <option value="Hinduja Hospital">P. D. Hinduja Hospital, Mumbai</option>
+        <option value="Other">Other</option>
+      </select>
+      <div id="otherAffiliationDiv" class="hidden">
+        <input id="otherAffiliation" name="otherAffiliation" type="text" placeholder="Enter other affiliation"
+          class="p-2 border border-blue-200 rounded" />
+      </div>
+
+      <select id="state" name="state" class="p-2 border border-blue-200 rounded" required>
+        <option value="">Select State</option>
+        <option value="Andhra Pradesh">Andhra Pradesh</option>
+        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+        <option value="Assam">Assam</option>
+        <option value="Bihar">Bihar</option>
+        <option value="Chhattisgarh">Chhattisgarh</option>
+        <option value="Goa">Goa</option>
+        <option value="Gujarat">Gujarat</option>
+        <option value="Haryana">Haryana</option>
+        <option value="Himachal Pradesh">Himachal Pradesh</option>
+        <option value="Jharkhand">Jharkhand</option>
+        <option value="Karnataka">Karnataka</option>
+        <option value="Kerala">Kerala</option>
+        <option value="Madhya Pradesh">Madhya Pradesh</option>
+        <option value="Maharashtra">Maharashtra</option>
+        <option value="Manipur">Manipur</option>
+        <option value="Meghalaya">Meghalaya</option>
+        <option value="Mizoram">Mizoram</option>
+        <option value="Nagaland">Nagaland</option>
+        <option value="Odisha">Odisha</option>
+        <option value="Punjab">Punjab</option>
+        <option value="Rajasthan">Rajasthan</option>
+        <option value="Sikkim">Sikkim</option>
+        <option value="Tamil Nadu">Tamil Nadu</option>
+        <option value="Telangana">Telangana</option>
+        <option value="Tripura">Tripura</option>
+        <option value="Uttar Pradesh">Uttar Pradesh</option>
+        <option value="Uttarakhand">Uttarakhand</option>
+        <option value="West Bengal">West Bengal</option>
+        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+        <option value="Chandigarh">Chandigarh</option>
+        <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+        <option value="Delhi">Delhi</option>
+        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+        <option value="Ladakh">Ladakh</option>
+        <option value="Lakshadweep">Lakshadweep</option>
+        <option value="Puducherry">Puducherry</option>
+      </select>
+
+      <select id="districtSelect" name="district" class="p-2 border border-blue-200 rounded" required disabled>
+        <option value="">Select District</option>
+      </select>
+      <input id="city" name="city" type="text" placeholder="City" class="p-2 border border-blue-200 rounded" required />
+      <textarea id="address" name="address" placeholder="Detailed Address" class="p-2 border border-blue-200 rounded"
+        required></textarea>
+      <input id="contact" name="contact" type="text" placeholder="Contact Number (10-digit)"
+        class="p-2 border border-blue-200 rounded" required />
+    </div>
+
+    <button type="submit"
+      class="w-full mt-6 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Register</button>
+
+    <div class="or-separator text-center my-6">
+      <span class="bg-white px-3 z-10 relative">OR</span>
+      <span class="absolute left-0 top-1/2 w-2/5 h-px bg-gray-300"></span>
+      <span class="absolute right-0 top-1/2 w-2/5 h-px bg-gray-300"></span>
+    </div>
+
+    <div id="g_id_onload" data-client_id="283178583517-2herbkn1cv739m0fg7589dsnnl40bb90.apps.googleusercontent.com"
+      data-context="signup" data-ux_mode="popup" data-callback="handleGoogleCredentialResponse" data-auto_prompt="false"
+      data-select_by="btn">
+    </div>
+    <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with"
+      data-shape="rectangular" data-logo_alignment="left">
+    </div>
+
+    <p class="text-center mt-4">Already have an account? <a href="/login"
+        class="text-blue-700 font-bold hover:underline">Login here</a></p>
   </form>
-  <script src="../scripts/script.js"></script>
+  <script src="./javascript/register.js"></script>
 </body>
+
 </html>

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const blogSchema =new mongoose.Schema({
+const blogSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -14,19 +14,20 @@ const blogSchema =new mongoose.Schema({
         required: true,
     },
     author: {
-        type: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
     },
     date: {
         type: Date,
-        default: Date.now},
+        default: Date.now
+    },
     likes: {
-        type: Array,
-        default: [{type:mongoose.Schema.Types.ObjectId, ref:"user"}]
+        type: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }],
+        default: []
     }
-},
-);
+});
 
-module.exports = mongoose.model("blog", blogSchema);
+module.exports = mongoose.model("Blog", blogSchema);

@@ -1,0 +1,75 @@
+body {
+    background-color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.otp-container {
+    max-width: 480px;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 0px 10px -5px rgba(0, 0, 0, 0.04);
+    padding: 2.5rem;
+}
+
+.otp-input-group input {
+    width: 48px;
+    height: 56px;
+    font-size: 1.5rem;
+    text-align: center;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.5rem;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    -moz-appearance: textfield;
+    margin-right: 0.5rem;
+}
+
+.otp-input-group input:last-child {
+    margin-right: 0;
+}
+
+.otp-input-group input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.otp-input-group input::-webkit-outer-spin-button,
+.otp-input-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.verify-button {
+    background-color: #2563eb;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    width: 100%;
+    transition: background-color 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.verify-button:hover {
+    background-color: #1d4ed8;
+}
+
+.resend-link {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.resend-link:hover {
+    color: #1d4ed8;
+}
+
+.timer-icon {
+    color: #3b82f6;
+    margin-right: 0.25rem;
+}

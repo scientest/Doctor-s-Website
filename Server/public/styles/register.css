@@ -1,0 +1,70 @@
+body {
+    background-color: #f0f8ff;
+}
+
+.form-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin: 3rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    max-width: 650px;
+}
+
+.form-title {
+    color: #1e3a8a;
+}
+
+.message-box {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.or-separator {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #4b5563;
+}
+
+.or-separator span.bg-white {
+    background: white;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    position: relative;
+    z-index: 10;
+}
+
+.or-separator span.absolute {
+    position: absolute;
+    top: 50%;
+    height: 1px;
+    background: #d1d5db;
+}
+
+.or-separator span.left-0 {
+    left: 0;
+    width: 40%;
+}
+
+.or-separator span.right-0 {
+    right: 0;
+    width: 40%;
+}
+
+.input-icon {
+    position: relative;
+}
+
+.input-icon input {
+    width: 100%;
+    padding-right: 2.5rem;
+}
+
+.input-icon i {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #1e3a8a;
+}
