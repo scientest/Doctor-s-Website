@@ -17,11 +17,11 @@ const isLoggedIn =async(req,res,next)=>{
             req.user = user;
             next();
         }else{
-            res.status(401).redirect("/login");
+            res.status(401).send("Unauthorized");
         }
     }
     else{
-        res.status(401).redirect("/login");
+        res.status(401).send("token is not saved");
     }
 }
 

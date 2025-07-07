@@ -111,9 +111,9 @@ router.post("/verify", isLoggedIn, async (req, res) => {
 
 
 //login
-router.get("/login", (req, res) => {
-    res.render("login");
-});
+// router.get("/login", (req, res) => {
+//     res.render("login");
+// });
 
 router.post("/login",async(req,res)=>{
      const {email,password}=req.body;
@@ -122,7 +122,7 @@ router.post("/login",async(req,res)=>{
         bcrypt.compare(password,existingUser.password,(err,result)=>{
             if(result){
                 const token = jwttoken(existingUser);
-                res.cookie("token", token);
+                res.cookie("token", token, { httpOnly: true , sameSite: "none",secure: false });
                 res.status(200).json({ message: "Login successful",userId:existingUser._id });
             }else{
                 res.status(400).json({ message: "Incorrect password" });
@@ -132,7 +132,7 @@ router.post("/login",async(req,res)=>{
 
 
 });
-router.get("/dashboard/:id", isLoggedIn,async(req, res) => {
+router.get("/dashboard", isLoggedIn,async(req, res) => {
     const user1 = req.user;
     const blog = await blogModel.find().populate("author");
     res.status(200).json( {user:user1,blog});

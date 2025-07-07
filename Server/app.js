@@ -17,7 +17,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 app.use(cors( 
     {
-        origin: "*",
+        origin: "http://127.0.0.1:8080",
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     }
