@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+        select: false, // Exclude password from queries by default
     },
     
     image: {
@@ -55,6 +56,24 @@ const userSchema = new mongoose.Schema({
     otpExpires: Date,
     verified: { type: Boolean, default: false },
     attempts: { type: Number, default: 0 },
+    friendsRequests: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+        },
+    ],
+    followers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+        },
+    ],
+    following: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user",
+        },
+    ],
 });
 
 module.exports = mongoose.model("user", userSchema);

@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const { isLoggedIn } = require("../Controllers/AuthController");
 const {jwttoken} = require("../middlewares/jwttoken");
 const userModel= require("../models/user");
+const friendsConnectionModel = require("../models/FriendsConnection");
 
 
 const generateOtp =() => Math.floor(100000 + Math.random() * 900000);
@@ -117,12 +118,17 @@ router.post("/verify", isLoggedIn, async (req, res) => {
 
 router.post("/login",async(req,res)=>{
      const {email,password}=req.body;
-     const existingUser =await userModel.findOne({email});
+     const existingUser =await userModel.findOne({email}).select("+password");
      if(existingUser){
         bcrypt.compare(password,existingUser.password,(err,result)=>{
             if(result){
                 const token = jwttoken(existingUser);
-                res.cookie("token", token, { httpOnly: true , sameSite: "none",secure: false });
+                res.cookie("token", token, {
+                    httpOnly: true,
+                    secure: false, // Set to true if using HTTPS
+                    maxAge: 24 * 60 * 60 * 1000,
+                    sameSite: "Lax", 
+                });
                 res.status(200).json({ message: "Login successful",userId:existingUser._id });
             }else{
                 res.status(400).json({ message: "Incorrect password" });
@@ -134,8 +140,9 @@ router.post("/login",async(req,res)=>{
 });
 router.get("/dashboard", isLoggedIn,async(req, res) => {
     const user1 = req.user;
-    const blog = await blogModel.find().populate("author");
-    res.status(200).json( {user:user1,blog});
+    const userList = await userModel.find();
+    const blog = await blogModel.find();
+    res.status(200).json( {user:user1,blog,userList, message: "Dashboard loaded successfully" });
 });
 
 router.post("/blogs/:id", isLoggedIn,async(req, res) => {
@@ -179,6 +186,75 @@ router.delete("/blogs/delete/:id/:blogId", isLoggedIn,async(req, res) => {
     await user1.save();
     res.status(200).json({ message: "Blog deleted successfully",blog});
 })
+
+router.post("/friends/request/:id", isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const friendId = req.params.id;
+
+    if (user1._id.toString() === friendId) {
+        return res.status(400).json({ message: "You cannot send a friend request to yourself." });
+    }
+
+    const followers = await userModel.findById(friendId);
+    if (!followers) {
+        return res.status(404).json({ message: "Friend not found." });
+    }
+
+    // Check if the request already exists
+    if (user1.friendsRequests.includes(friendId)) {
+        return res.status(400).json({ message: "Friend request already sent." });
+    }
+
+    user1.friendsRequests.push(friendId);
+    await user1.save();
+
+    res.status(200).json({ message: "Friend request sent successfully." });
+});
+
+router.get("/friends/requests", isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const friendRequests = await userModel.find({ _id: { $in: user1.friendsRequests } });
+    res.status(200).json({ friendRequests });
+});
+
+router.delete("/friends/request/:id", isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const friendId = req.params.id;
+
+    if (user1._id.toString() === friendId) {
+        return res.status(400).json({ message: "You cannot delete a friend request from yourself." });
+    }
+
+    user1.friendsRequests.pull(friendId);
+    await user1.save();
+
+    res.status(200).json({ message: "Friend request deleted successfully." });
+});
+
+router.put("/friends/accept/:id",isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const friendId = req.params.id;
+
+    if (user1._id.toString() === friendId) {
+        return res.status(400).json({ message: "You cannot accept a friend request from yourself." });
+    }
+
+    const friend = await userModel.findById(friendId);
+    if (!friend) {
+        return res.status(404).json({ message: "Friend not found." });
+    }
+
+    if (!user1.friendsRequests.includes(friendId)) {
+        return res.status(400).json({ message: "Friend request not found." });
+    }
+
+    user1.followers.push(friendId);
+    user1.friendsRequests.pull(friendId);
+    await user1.save();
+
+    res.status(200).json({ message: "Friend request accepted successfully." });
+});
+
 
 //Logout ==== 
 router.get("/logout", (req, res) => {
