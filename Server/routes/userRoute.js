@@ -8,7 +8,6 @@ const bcrypt = require("bcrypt");
 const { isLoggedIn } = require("../Controllers/AuthController");
 const {jwttoken} = require("../middlewares/jwttoken");
 const userModel= require("../models/user");
-const friendsConnectionModel = require("../models/FriendsConnection");
 
 
 const generateOtp =() => Math.floor(100000 + Math.random() * 900000);
@@ -139,121 +138,12 @@ router.post("/login",async(req,res)=>{
 
 });
 router.get("/dashboard", isLoggedIn,async(req, res) => {
-    const user1 = req.user;
-    const userList = await userModel.find();
+    const user1 = req.userName;
+    const userList = await userModel.find().select("name id email");
     const blog = await blogModel.find();
     res.status(200).json( {user:user1,blog,userList, message: "Dashboard loaded successfully" });
 });
 
-router.post("/blogs/:id", isLoggedIn,async(req, res) => {
-    const user1 = req.user;
-    const { title, description } = req.body;
-    const blog = new blogModel({
-        title,
-        description,
-        author:user1._id
-    });
-    await blog.save();
-    user1.blogs.push(blog._id);
-    await user1.save();
-    res.status(201).json({ message: "Blog created successfully",blog});
-});
-
-
-//edit
-router.put("/blogs/edit/:id/:blogId", isLoggedIn,async(req, res) => {
-    const user1 = req.user;
-    const blog = await blogModel.findById(req.params.blogId);
-    blog.title = req.body.title;
-    blog.description = req.body.description;
-    await blog.save();
-   res.status(200).json({ message: "Blog updated successfully",blog});
-})
-
-//likes
-router.put("/blogs/like/:id/:blogId", isLoggedIn,async(req, res) => {
-    const user1 = req.user;
-    const blog = await blogModel.findById(req.params.blogId);
-    blog.likes.push(user1._id);
-    await blog.save();
-    res.status(200).json({ message: "Blog liked successfully",blog});
-})
-
-router.delete("/blogs/delete/:id/:blogId", isLoggedIn,async(req, res) => {
-    const user1 = req.user;
-    const blog = await blogModel.findByIdAndDelete(req.params.blogId);
-    user1.blogs.pull(blog._id);
-    await user1.save();
-    res.status(200).json({ message: "Blog deleted successfully",blog});
-})
-
-router.post("/friends/request/:id", isLoggedIn, async (req, res) => {
-    const user1 = req.user;
-    const friendId = req.params.id;
-
-    if (user1._id.toString() === friendId) {
-        return res.status(400).json({ message: "You cannot send a friend request to yourself." });
-    }
-
-    const followers = await userModel.findById(friendId);
-    if (!followers) {
-        return res.status(404).json({ message: "Friend not found." });
-    }
-
-    // Check if the request already exists
-    if (user1.friendsRequests.includes(friendId)) {
-        return res.status(400).json({ message: "Friend request already sent." });
-    }
-
-    user1.friendsRequests.push(friendId);
-    await user1.save();
-
-    res.status(200).json({ message: "Friend request sent successfully." });
-});
-
-router.get("/friends/requests", isLoggedIn, async (req, res) => {
-    const user1 = req.user;
-    const friendRequests = await userModel.find({ _id: { $in: user1.friendsRequests } });
-    res.status(200).json({ friendRequests });
-});
-
-router.delete("/friends/request/:id", isLoggedIn, async (req, res) => {
-    const user1 = req.user;
-    const friendId = req.params.id;
-
-    if (user1._id.toString() === friendId) {
-        return res.status(400).json({ message: "You cannot delete a friend request from yourself." });
-    }
-
-    user1.friendsRequests.pull(friendId);
-    await user1.save();
-
-    res.status(200).json({ message: "Friend request deleted successfully." });
-});
-
-router.put("/friends/accept/:id",isLoggedIn, async (req, res) => {
-    const user1 = req.user;
-    const friendId = req.params.id;
-
-    if (user1._id.toString() === friendId) {
-        return res.status(400).json({ message: "You cannot accept a friend request from yourself." });
-    }
-
-    const friend = await userModel.findById(friendId);
-    if (!friend) {
-        return res.status(404).json({ message: "Friend not found." });
-    }
-
-    if (!user1.friendsRequests.includes(friendId)) {
-        return res.status(400).json({ message: "Friend request not found." });
-    }
-
-    user1.followers.push(friendId);
-    user1.friendsRequests.pull(friendId);
-    await user1.save();
-
-    res.status(200).json({ message: "Friend request accepted successfully." });
-});
 
 
 //Logout ==== 

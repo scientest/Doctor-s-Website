@@ -14,7 +14,9 @@ const isLoggedIn =async(req,res,next)=>{
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         const user = await userModel.findById(decoded.id);
         if(user){
-            req.user = user;
+            req.userId = user._id;
+            req.userName = user.name;
+            req.userEmail = user.email;
             next();
         }else{
             res.status(401).send("Unauthorized");

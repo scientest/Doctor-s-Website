@@ -10,18 +10,19 @@ const blogModel = require("./models/blog");
 const paymentModel = require("./models/payment");
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
+const blogRoute = require("./routes/blogsRoute");
 dotenv.config();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors( {
-    origin: "http://localhost:5173", // Replace with your frontend URL
+    origin: "*", // Replace with your frontend URL
     credentials: true, // Allow cookies to be sent
 }));
 
-
-app.use("/", userRoute);
+app.use(blogRoute);
+app.use(userRoute);
 
 
 
