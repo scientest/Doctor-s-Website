@@ -66,10 +66,16 @@ Dr.App is a backend server for a doctor-patient social platform, built with Node
   - `200 OK` with updated blog
 
 #### Like Blog
-- **PUT** `/blogs/like/:id/:blogId`
+- **PUT** `/blogs/like/:blogId`
 - **Auth:** Cookie token required
 - **Response:**  
   - `200 OK` with updated blog
+
+#### Dislike Blog
+- **PUT** `/blogs/dislike/:blogId`
+- **Auth:** Cookie token required
+- **Response:**  
+  - `200 OK` with updated blog after removing user's like
 
 #### Delete Blog
 - **DELETE** `/blogs/delete/:id/:blogId`
@@ -77,47 +83,59 @@ Dr.App is a backend server for a doctor-patient social platform, built with Node
 - **Response:**  
   - `200 OK` with deleted blog info
 
----
+#### Add Comment to Blog
+- **PUT** `/blogs/comment/:blogId`
+- **Auth:** Cookie token required
+- **Body:** `{ comment }`
+- **Response:**  
+  - `200 OK` with updated blog including new comment
 
-### Friends
-
-#### Send Friend Request
-- **POST** `/friends/request/:id`
+#### Get Blogs by Author
+- **GET** `/blogs/author/:authorId`
 - **Auth:** Cookie token required
 - **Response:**  
-  - `200 OK` if sent  
-  - `400/404` for errors
+  - `200 OK` with blogs written by the specified author
 
-#### Get Friend Requests
-- **GET** `/friends/requests`
-- **Auth:** Cookie token required
+#### Search Blogs by Keyword
+- **GET** `/blogs/search?query=keyword`
 - **Response:**  
-  - `200 OK` with list of friend requests
-
-#### Delete Friend Request
-- **DELETE** `/friends/request/:id`
-- **Auth:** Cookie token required
-- **Response:**  
-  - `200 OK` if deleted
-
-#### Accept Friend Request
-- **PUT** `/friends/accept/:id`
-- **Auth:** Cookie token required
-- **Response:**  
-  - `200 OK` if accepted
+  - `200 OK` with blogs matching the keyword in title or description  
+  - `400 Bad Request` if query is missing
 
 ---
 
 ## Project Structure
 
-See [Server/routes/userRoute.js](Server/routes/userRoute.js) for route implementations.
+```
+internship_dr/
+│
+├── Server/
+│   ├── app.js                  # Main Express app, loads routes and middleware
+│   ├── Database/
+│   │   └── dbConnect.js        # MongoDB connection logic
+│   ├── Controllers/
+│   │   ├── AuthController.js   # Auth middleware and logic
+│   │   └── Transporter.js      # Email transporter setup
+│   ├── middlewares/
+│   │   └── jwttoken.js         # JWT token generation
+│   ├── models/
+│   │   ├── user.js             # User schema
+│   │   ├── blog.js             # Blog schema
+│   │   └── payment.js          # Payment schema
+│   ├── routes/
+│   │   ├── userRoute.js        # User-related endpoints
+│   │   └── blogsRoute.js       # Blog-related endpoints
+│   └── ...
+│
+├── Readme.md                   # Project documentation
+└── ...
+```
+
+- All API endpoints are registered in `app.js` using `userRoute` and `blogRoute`.
+- Middleware for cookies, CORS, JSON, and URL encoding is configured in `app.js`.
 
 ---
 
 ## Authors
 
 Yash, Sunita, Riya Bansal, Sahnaaz Khan, Akshat Shrivastav, Nishita Singh
-
----
-
-## License
