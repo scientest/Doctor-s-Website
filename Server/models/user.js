@@ -48,20 +48,22 @@ const userSchema = new mongoose.Schema({
         type: Array,
         default:[]
     },
-    payment_Id:{
-        type: Array,
-        default:[{type: mongoose.Schema.Types.ObjectId, ref: "Payment"}]
+    payment_Id:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "payment",
+        default: null
+         }],
+     otp:{
+        type: String,
+        select: false, // Exclude otp from queries by default
+     },
+    otpExpires: {
+        type: Date,
+        default: Date.now,
+        select: false, // Exclude otpExpires from queries by default
     },
-     otp: String,
-    otpExpires: Date,
     verified: { type: Boolean, default: false },
-    attempts: { type: Number, default: 0 },
-    friendsRequests: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
-        },
-    ],
+    attempts: { type: Number, default: 0 ,select: false}, // Number of attempts for OTP verification
     followers: [
         {
             type: mongoose.Schema.Types.ObjectId,

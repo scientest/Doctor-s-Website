@@ -146,6 +146,85 @@ router.get("/dashboard", isLoggedIn,async(req, res) => {
 
 
 
+//Update user profile
+router.put("/update", isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const { name, email, contact, address, image } = req.body;
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(user1._id, { name, email, contact, address, image }, { new: true });
+        res.status(200).json({ message: "Profile updated successfully", updatedUser });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+//Get user profile
+router.get("/profile", isLoggedIn, async (req, res) => {
+    const user1 = req.userId;
+    try {
+        const userProfile = await userModel.findById(user1).populate("blogs");
+        res.status(200).json({ message: "Profile fetched successfully", userProfile });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+//follow user
+router.put("/follow/:id", isLoggedIn, async (req, res) => {
+    const currentId = req.userId;
+    const targetedId = req.params.id;
+    try {
+        const currentuser = await userModel.findById(currentId);
+        const targetedUser = await userModel.findById(targetedId);
+        if (!currentuser || !targetedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }else if(currentuser==targetedUser){
+            return res.status(400).json({ message: "You cannot follow yourself" });
+        }else if(targetedUser.followers.includes(currentId)){
+            return res.status(400).json({ message: "You are already following this user" });
+        }else{
+            currentuser.following.push(targetedId);
+            targetedUser.followers.push(currentId);
+            await currentuser.save();
+            await targetedUser.save();
+            res.status(200).json({ message: "Followed successfully", currentuser, targetedUser });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+    
+});
+
+//unfollow user
+router.put("/unfollow/:id", isLoggedIn, async (req, res) => {
+    const currentId = req.userId;
+    const targetedId = req.params.id;
+    try {
+        const currentuser = await userModel.findById(currentId);
+        const targetedUser = await userModel.findById(targetedId);
+        if (!currentuser || !targetedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }else if(!targetedUser.followers.includes(currentId)){
+            return res.status(400).json({ message: "You are not following this user" });
+        }else{
+            currentuser.following.pull(targetedId);
+            targetedUser.followers.pull(currentId);
+            await currentuser.save();
+            await targetedUser.save();
+            res.status(200).json({ message: "Unfollowed successfully", currentuser, targetedUser });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+    
+});
+
+
+
 //Logout ==== 
 router.get("/logout", (req, res) => {
     res.clearCookie("token");
