@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dr.App is a backend server for a doctor-patient social platform, built with Node.js, Express, and MongoDB. It supports user registration with OTP verification, authentication, blogging, and a friend request system.
+Dr.App is a backend server for a doctor-patient social platform, built with Node.js, Express, and MongoDB. It supports user registration with OTP verification, authentication, blogging, and a social following system.
 
 ---
 
@@ -12,14 +12,28 @@ Dr.App is a backend server for a doctor-patient social platform, built with Node
 
 #### Register User
 - **POST** `/register`
-- **Body:** `{ name, email, password, contact, address, image, Dob }`
+- **Body:**
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "yourpassword",
+    "contact": "1234567890",
+    "address": "123 Main St",
+    "image": "profile.jpg",
+    "Dob": "1990-01-01"
+  }
+  ```
 - **Response:**  
   - `201 Created` with userId and OTP message  
   - `400 Bad Request` if user exists
 
 #### Verify OTP
 - **POST** `/verify`
-- **Body:** `{ otp }`
+- **Body:**
+  ```json
+  { "otp": "123456" }
+  ```
 - **Auth:** Cookie token required
 - **Response:**  
   - `200 OK` if OTP verified  
@@ -27,7 +41,10 @@ Dr.App is a backend server for a doctor-patient social platform, built with Node
 
 #### Login
 - **POST** `/login`
-- **Body:** `{ email, password }`
+- **Body:**
+  ```json
+  { "email": "john@example.com", "password": "yourpassword" }
+  ```
 - **Response:**  
   - `200 OK` with userId and cookie token  
   - `400 Bad Request` for incorrect password
@@ -49,90 +66,146 @@ Dr.App is a backend server for a doctor-patient social platform, built with Node
 
 ---
 
+### User Follow/Unfollow
+
+#### Follow a User
+- **PUT** `/follow/:id`
+- **Auth:** Cookie token required
+- **Example:**  
+  ```
+  PUT /follow/60f7c2b5e1d2c8a1b8e4d123
+  ```
+- **Response:**  
+  - `200 OK` if followed successfully  
+  - `400/404` for errors
+
+#### Unfollow a User
+- **PUT** `/unfollow/:id`
+- **Auth:** Cookie token required
+- **Example:**  
+  ```
+  PUT /unfollow/60f7c2b5e1d2c8a1b8e4d123
+  ```
+- **Response:**  
+  - `200 OK` if unfollowed successfully  
+  - `400/404` for errors
+
+---
+
 ### Blog
 
 #### Create Blog
-- **POST** `/blogs/:id`
+- **POST** `/blog/add`
 - **Auth:** Cookie token required
-- **Body:** `{ title, description }`
+- **Body:**
+  ```json
+  { "title": "My First Blog", "description": "This is my first blog post." }
+  ```
 - **Response:**  
   - `201 Created` with blog info
 
 #### Edit Blog
 - **PUT** `/blogs/edit/:id/:blogId`
 - **Auth:** Cookie token required
-- **Body:** `{ title, description }`
+- **Body:**
+  ```json
+  { "title": "Updated Title", "description": "Updated description." }
+  ```
 - **Response:**  
   - `200 OK` with updated blog
 
 #### Like Blog
 - **PUT** `/blogs/like/:blogId`
 - **Auth:** Cookie token required
+- **Example:**  
+  ```
+  PUT /blogs/like/60f7c2b5e1d2c8a1b8e4d456
+  ```
 - **Response:**  
   - `200 OK` with updated blog
 
 #### Dislike Blog
 - **PUT** `/blogs/dislike/:blogId`
 - **Auth:** Cookie token required
+- **Example:**  
+  ```
+  PUT /blogs/dislike/60f7c2b5e1d2c8a1b8e4d456
+  ```
 - **Response:**  
   - `200 OK` with updated blog after removing user's like
 
 #### Delete Blog
 - **DELETE** `/blogs/delete/:id/:blogId`
 - **Auth:** Cookie token required
+- **Example:**  
+  ```
+  DELETE /blogs/delete/60f7c2b5e1d2c8a1b8e4d123/60f7c2b5e1d2c8a1b8e4d456
+  ```
 - **Response:**  
   - `200 OK` with deleted blog info
-
-#### Add Comment to Blog
-- **PUT** `/blogs/comment/:blogId`
-- **Auth:** Cookie token required
-- **Body:** `{ comment }`
-- **Response:**  
-  - `200 OK` with updated blog including new comment
 
 #### Get Blogs by Author
 - **GET** `/blogs/author/:authorId`
 - **Auth:** Cookie token required
+- **Example:**  
+  ```
+  GET /blogs/author/60f7c2b5e1d2c8a1b8e4d123
+  ```
 - **Response:**  
   - `200 OK` with blogs written by the specified author
 
+#### Get All Blogs
+- **GET** `/blogs`
+- **Response:**  
+  - `200 OK` with all blogs
+
+#### Get Single Blog by ID
+- **GET** `/blogs/:id`
+- **Example:**  
+  ```
+  GET /blogs/60f7c2b5e1d2c8a1b8e4d456
+  ```
+- **Response:**  
+  - `200 OK` with blog details
+
 #### Search Blogs by Keyword
 - **GET** `/blogs/search?query=keyword`
+- **Example:**  
+  ```
+  GET /blogs/search?query=doctor
+  ```
 - **Response:**  
   - `200 OK` with blogs matching the keyword in title or description  
   - `400 Bad Request` if query is missing
 
 ---
 
-## Project Structure
+### Blog Comments
 
-```
-internship_dr/
-│
-├── Server/
-│   ├── app.js                  # Main Express app, loads routes and middleware
-│   ├── Database/
-│   │   └── dbConnect.js        # MongoDB connection logic
-│   ├── Controllers/
-│   │   ├── AuthController.js   # Auth middleware and logic
-│   │   └── Transporter.js      # Email transporter setup
-│   ├── middlewares/
-│   │   └── jwttoken.js         # JWT token generation
-│   ├── models/
-│   │   ├── user.js             # User schema
-│   │   ├── blog.js             # Blog schema
-│   │   └── payment.js          # Payment schema
-│   ├── routes/
-│   │   ├── userRoute.js        # User-related endpoints
-│   │   └── blogsRoute.js       # Blog-related endpoints
-│   └── ...
-│
-├── Readme.md                   # Project documentation
-└── ...
-```
+#### Add Comment or Reply to a Comment
+- **POST** `/comments/add/:blogId`
+- **Auth:** Cookie token required
+- **Body:**  
+  - For direct comment:
+    ```json
+    { "text": "Nice blog!" }
+    ```
+  - For reply:
+    ```json
+    { "text": "Thanks!", "parentId": "<commentId>" }
+    ```
+- **Response:**  
+  - `201 Created` if comment or reply added successfully  
+  - `400/404` for errors
 
-- All API endpoints are registered in `app.js` using `userRoute` and `blogRoute`.
-- Middleware for cookies, CORS, JSON, and URL encoding is configured in `app.js`.
+#### Get Comments of a Blog
+- **GET** `/comments/:blogId`
+- **Example:**  
+  ```
+  GET /comments/60f7c2b5e1d2c8a1b8e4d456
+  ```
+- **Response:**  
+  - `200 OK` with all comments and replies for the blog
 
 ---
 
