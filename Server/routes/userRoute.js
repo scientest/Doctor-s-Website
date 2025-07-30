@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 const cookieParser = require("cookie-parser");
 const blogModel = require("../models/blog");
 const {varified} =require("../middlewares/SendMail");
@@ -12,9 +14,9 @@ const userModel= require("../models/user");
 
 const generateOtp =() => Math.floor(100000 + Math.random() * 900000);
 //Register form post
-router.post("/register", async(req, res) => {
-   const { name, email, password, contact, address,image, Dob} = req.body;
-//    console.log(name, email, password, contact, address, image, Dob);
+router.post("/register",async(req, res) => {
+   const { name, email, password, contact, address, Dob} = req.body;
+   console.log(name, email, password, contact, address, image, Dob);
     const otp = generateOtp();
     const otpExpires = Date.now() + 600000;
    const existingUser = await userModel.findOne({ email });
@@ -147,9 +149,10 @@ router.get("/dashboard", isLoggedIn,async(req, res) => {
 
 
 //Update user profile
-router.put("/update", isLoggedIn, async (req, res) => {
+router.put("/update", isLoggedIn,upload.single("image"), async (req, res) => {
     const user1 = req.user;
-    const { name, email, contact, address, image } = req.body;
+    const { name, email, contact, address } = req.body;
+    const image = req.file ? req.file.filename : null;
     try {
         const updatedUser = await userModel.findByIdAndUpdate(user1._id, { name, email, contact, address, image }, { new: true });
         res.status(200).json({ message: "Profile updated successfully", updatedUser });
