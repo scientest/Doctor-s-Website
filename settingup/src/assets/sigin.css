@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* --- General Styling --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+   background: linear-gradient(135deg, #6c5ce7, #e0c3fc);
+    display: flex;
+    flex-direction: column; /* Ensures title and form stack vertically */
+    align-items: center;     /* Keeps content centered horizontally */
+    justify-content: flex-start; /* Aligns content to the top */
+    min-height: 100vh;
+    padding-top: 5vh; /* Adds a bit of space from the top */
+   
+}
+.page-title {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #4a5568; /* A neutral dark gray */
+    text-align: center;
+     margin-bottom: 20px;
+    /* margin-top: 2rem; Adds space between the title and the sign-up box */
+}
+.right-panel {
+    padding: 40px;
+    width: 55%;
+    display: flex;
+    align-items: center;
+}
+
+.form-content {
+    width: 100%;
+}
+.right-panel h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.social-login {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* --- UPDATED: Added rules for <a> tags --- */
+    text-decoration: none; 
+     /* Removes  */
+        
+}
+
+.social-btn:hover{
+    background-color: #f7f7f7;
+}
+
+/* --- Main Container & Slide-in Animation --- */
+.signup-container {
+    display: flex;
+    width: 900px;
+    max-width: 95%;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    animation: slideInFromLeft 1s ease-out forwards;
+    opacity: 0; /* Start invisible */
+}
+
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100vw);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+
+/* --- Left Panel --- */
+.left-panel {
+    background: #f0f4ff;
+    padding: 40px;
+    width: 45%;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    text-align: center;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-panel .logo {
+    font-size: 2rem;
+    color: #4a6cf7;
+    background: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+}
+
+.left-panel h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.left-panel p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.stethoscope-img {
+    width: 150px;
+    filter: drop-shadow(0 5px 15px rgba(74, 108, 247, 0.3));
+    animation: pulse 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 5px 15px rgba(74, 108, 247, 0.3));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 8px 25px rgba(74, 108, 247, 0.5));
+    }
+}
+
+
+/* --- Right Panel (Form) --- */
+.right-panel {
+    padding: 40px;
+    width: 55%;
+    display: flex;
+    align-items: center;
+}
+
+.form-content {
+    width: 100%;
+}
+
+.right-panel h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.social-login {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.social-btn:hover {
+    background-color: #f7f7f7;
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    color: #aaa;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #4a6cf7;
+}
+
+.eye-icon {
+    position: absolute;
+    top: 40px;
+    right: 15px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.create-account-btn {
+    width: 100%;
+    padding: 14px;
+    background: #4a6cf7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.create-account-btn:hover {
+    background: #3a56c4;
+    transform: translateY(-2px);
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.login-link a {
+    color: #4a6cf7;
+    text-decoration: none;
+    font-weight: 500;
+}
